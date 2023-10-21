@@ -1,31 +1,45 @@
-use std::{fmt::Debug, ops::{Add, Sub, Mul, Div, AddAssign, SubAssign, MulAssign, DivAssign}};
-use crate::{Matrix2D, Zero, One, Epsilon, MatrixError, MatrixLUP};
+use crate::{Epsilon, Matrix2D, MatrixError, MatrixLUP, One, Zero};
+use std::{
+    fmt::Debug,
+    ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign},
+};
 
 /*
  * pub fn solve_forward()
- * 
+ *
  * Descriptions:
  * L * x = B
- * input: 
- *  - L: shape (N, N) 
- *  - B: shape (N, 1) 
- * output: 
- *  - x: shape (N, 1) 
+ * input:
+ *  - L: shape (N, N)
+ *  - B: shape (N, 1)
+ * output:
+ *  - x: shape (N, 1)
  */
 #[allow(dead_code)]
-pub fn solve_forward<T>(l: &Matrix2D<T>, b: &Matrix2D<T>) -> Result<Matrix2D<T>, MatrixError> 
-    where T: Zero + One + Clone + Copy + Debug + PartialEq + PartialOrd
-        + Add<Output = T> + AddAssign 
-        + Sub<Output = T> + SubAssign 
-        + Mul<Output = T> + MulAssign
-        + Div<Output = T> + DivAssign
+pub fn solve_forward<T>(l: &Matrix2D<T>, b: &Matrix2D<T>) -> Result<Matrix2D<T>, MatrixError>
+where
+    T: Zero
+        + One
+        + Clone
+        + Copy
+        + Debug
+        + PartialEq
+        + PartialOrd
+        + Add<Output = T>
+        + AddAssign
+        + Sub<Output = T>
+        + SubAssign
+        + Mul<Output = T>
+        + MulAssign
+        + Div<Output = T>
+        + DivAssign
         + std::ops::Neg<Output = T>
-        + Epsilon
+        + Epsilon,
 {
     if !l.is_square {
         return Err(MatrixError::NotSquare);
     }
-    if l.shape.0!=b.shape.0 {
+    if l.shape.0 != b.shape.0 {
         return Err(MatrixError::ShapeMismatch);
     }
 
@@ -44,29 +58,40 @@ pub fn solve_forward<T>(l: &Matrix2D<T>, b: &Matrix2D<T>) -> Result<Matrix2D<T>,
 
 /*
  * pub fn solve_backward()
- * 
+ *
  * Descriptions:
  * U * x = B
- * input: 
- *  - U: shape (N, N) 
- *  - B: shape (N, 1) 
- * output: 
- *  - x: shape (N, 1) 
+ * input:
+ *  - U: shape (N, N)
+ *  - B: shape (N, 1)
+ * output:
+ *  - x: shape (N, 1)
  */
 #[allow(dead_code)]
-pub fn solve_backward<T>(u: &Matrix2D<T>, b: &Matrix2D<T>) -> Result<Matrix2D<T>, MatrixError> 
-    where T: Zero + One + Clone + Copy + Debug + PartialEq + PartialOrd
-        + Add<Output = T> + AddAssign 
-        + Sub<Output = T> + SubAssign 
-        + Mul<Output = T> + MulAssign
-        + Div<Output = T> + DivAssign
+pub fn solve_backward<T>(u: &Matrix2D<T>, b: &Matrix2D<T>) -> Result<Matrix2D<T>, MatrixError>
+where
+    T: Zero
+        + One
+        + Clone
+        + Copy
+        + Debug
+        + PartialEq
+        + PartialOrd
+        + Add<Output = T>
+        + AddAssign
+        + Sub<Output = T>
+        + SubAssign
+        + Mul<Output = T>
+        + MulAssign
+        + Div<Output = T>
+        + DivAssign
         + std::ops::Neg<Output = T>
-        + Epsilon
+        + Epsilon,
 {
     if !u.is_square {
         return Err(MatrixError::NotSquare);
     }
-    if u.shape.0!=b.shape.0 {
+    if u.shape.0 != b.shape.0 {
         return Err(MatrixError::ShapeMismatch);
     }
 
@@ -85,15 +110,15 @@ pub fn solve_backward<T>(u: &Matrix2D<T>, b: &Matrix2D<T>) -> Result<Matrix2D<T>
 
 /*
  * pub fn solve()
- * 
+ *
  * Descriptions:
  * A * x = B
- * input: 
- *  - A: shape (N, N) 
- *  - B: shape (N, 1) 
- * output: 
- *  - x: shape (N, 1) 
- * 
+ * input:
+ *  - A: shape (N, N)
+ *  - B: shape (N, 1)
+ * output:
+ *  - x: shape (N, 1)
+ *
  * Calculation:
  *    A * x = B
  * => P * A * x = P * B
@@ -105,19 +130,30 @@ pub fn solve_backward<T>(u: &Matrix2D<T>, b: &Matrix2D<T>) -> Result<Matrix2D<T>
  * and use solve_backward() for U * x = y to figure out x
  */
 #[allow(dead_code)]
-pub fn solve<T>(lup: &MatrixLUP<T>, b: &Matrix2D<T>) -> Result<Matrix2D<T>, MatrixError> 
-    where T: Zero + One + Clone + Copy + Debug + PartialEq + PartialOrd
-        + Add<Output = T> + AddAssign 
-        + Sub<Output = T> + SubAssign 
-        + Mul<Output = T> + MulAssign
-        + Div<Output = T> + DivAssign
+pub fn solve<T>(lup: &MatrixLUP<T>, b: &Matrix2D<T>) -> Result<Matrix2D<T>, MatrixError>
+where
+    T: Zero
+        + One
+        + Clone
+        + Copy
+        + Debug
+        + PartialEq
+        + PartialOrd
+        + Add<Output = T>
+        + AddAssign
+        + Sub<Output = T>
+        + SubAssign
+        + Mul<Output = T>
+        + MulAssign
+        + Div<Output = T>
+        + DivAssign
         + std::ops::Neg<Output = T>
-        + Epsilon
+        + Epsilon,
 {
     if !lup.l.is_square {
         return Err(MatrixError::NotSquare);
     }
-    if lup.l.shape.0!=b.shape.0 {
+    if lup.l.shape.0 != b.shape.0 {
         return Err(MatrixError::ShapeMismatch);
     }
 
@@ -126,5 +162,3 @@ pub fn solve<T>(lup: &MatrixLUP<T>, b: &Matrix2D<T>) -> Result<Matrix2D<T>, Matr
     let x = solve_backward(&lup.u, &y)?;
     Ok(x)
 }
-
-

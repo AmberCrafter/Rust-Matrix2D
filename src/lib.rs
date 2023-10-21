@@ -1,6 +1,9 @@
-use std::{fmt::{Debug, Display}, error::Error, ops::{Add, Sub, Mul, Div, AddAssign, SubAssign, MulAssign, DivAssign}};
+use std::{
+    error::Error,
+    fmt::{Debug, Display},
+    ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign},
+};
 mod modules;
-
 
 #[allow(dead_code)]
 type BoxError = Box<dyn Error + 'static>;
@@ -128,23 +131,23 @@ macro_rules! impl_macro_for_all_nums {
     };
 
     ($macro: tt, int) => {
-        $macro!(i8,     int);
-        $macro!(i16,    int);
-        $macro!(i32,    int);
-        $macro!(i64,    int);
-        $macro!(i128,   int);
-        $macro!(isize,  int);
-        $macro!(u8,     int);
-        $macro!(u16,    int);
-        $macro!(u32,    int);
-        $macro!(u64,    int);
-        $macro!(u128,   int);
-        $macro!(usize,  int);
+        $macro!(i8, int);
+        $macro!(i16, int);
+        $macro!(i32, int);
+        $macro!(i64, int);
+        $macro!(i128, int);
+        $macro!(isize, int);
+        $macro!(u8, int);
+        $macro!(u16, int);
+        $macro!(u32, int);
+        $macro!(u64, int);
+        $macro!(u128, int);
+        $macro!(usize, int);
     };
 
     ($macro: tt, float) => {
-        $macro!(f32,    float);
-        $macro!(f64,    float);
+        $macro!(f32, float);
+        $macro!(f64, float);
     };
 }
 
@@ -156,46 +159,52 @@ impl_macro_for_all_nums!(impl_epsilon, int);
 impl_macro_for_all_nums!(impl_epsilon, float);
 
 pub trait ScalarOperation<T> {
-    fn sadd(&mut self, val:T);
-    fn ssub(&mut self, val:T);
-    fn smul(&mut self, val:T);
-    fn sdiv(&mut self, val:T);
-    fn sadd_clone(&self, val:T) -> Self;
-    fn ssub_clone(&self, val:T) -> Self;
-    fn smul_clone(&self, val:T) -> Self;
-    fn sdiv_clone(&self, val:T) -> Self;
+    fn sadd(&mut self, val: T);
+    fn ssub(&mut self, val: T);
+    fn smul(&mut self, val: T);
+    fn sdiv(&mut self, val: T);
+    fn sadd_clone(&self, val: T) -> Self;
+    fn ssub_clone(&self, val: T) -> Self;
+    fn smul_clone(&self, val: T) -> Self;
+    fn sdiv_clone(&self, val: T) -> Self;
 }
 
-impl<T> ScalarOperation<T> for Vec<T> 
-    where T: Clone + Copy
-    + Add<Output = T> + AddAssign 
-    + Sub<Output = T> + SubAssign 
-    + Mul<Output = T> + MulAssign
-    + Div<Output = T> + DivAssign
+impl<T> ScalarOperation<T> for Vec<T>
+where
+    T: Clone
+        + Copy
+        + Add<Output = T>
+        + AddAssign
+        + Sub<Output = T>
+        + SubAssign
+        + Mul<Output = T>
+        + MulAssign
+        + Div<Output = T>
+        + DivAssign,
 {
-    fn sadd(&mut self, val:T) {
+    fn sadd(&mut self, val: T) {
         self.into_iter().for_each(|v| *v += val);
     }
-    fn sdiv(&mut self, val:T) {
+    fn sdiv(&mut self, val: T) {
         self.into_iter().for_each(|v| *v -= val);
     }
-    fn smul(&mut self, val:T) {
+    fn smul(&mut self, val: T) {
         self.into_iter().for_each(|v| *v *= val);
     }
-    fn ssub(&mut self, val:T) {
+    fn ssub(&mut self, val: T) {
         self.into_iter().for_each(|v| *v /= val);
     }
-    
-    fn sadd_clone(&self, val:T) -> Self {
+
+    fn sadd_clone(&self, val: T) -> Self {
         self.iter().map(|&v| v + val).collect()
     }
-    fn sdiv_clone(&self, val:T) -> Self {
+    fn sdiv_clone(&self, val: T) -> Self {
         self.iter().map(|&v| v - val).collect()
     }
-    fn smul_clone(&self, val:T) -> Self {
+    fn smul_clone(&self, val: T) -> Self {
         self.iter().map(|&v| v * val).collect()
     }
-    fn ssub_clone(&self, val:T) -> Self {
+    fn ssub_clone(&self, val: T) -> Self {
         self.iter().map(|&v| v / val).collect()
     }
 }
@@ -215,12 +224,23 @@ pub struct MatrixLUP<T> {
     num_permutations: usize,
 }
 
-impl<T> ScalarOperation<T> for Matrix2D<T> 
-    where T: Zero + One + Clone + Copy + Debug + PartialEq + PartialOrd
-        + Add<Output = T> + AddAssign 
-        + Sub<Output = T> + SubAssign 
-        + Mul<Output = T> + MulAssign
-        + Div<Output = T> + DivAssign
+impl<T> ScalarOperation<T> for Matrix2D<T>
+where
+    T: Zero
+        + One
+        + Clone
+        + Copy
+        + Debug
+        + PartialEq
+        + PartialOrd
+        + Add<Output = T>
+        + AddAssign
+        + Sub<Output = T>
+        + SubAssign
+        + Mul<Output = T>
+        + MulAssign
+        + Div<Output = T>
+        + DivAssign,
 {
     fn sadd(&mut self, val: T) {
         for i in 0..self.shape.0 {
@@ -230,7 +250,7 @@ impl<T> ScalarOperation<T> for Matrix2D<T>
         }
     }
 
-    fn sadd_clone(&self, val:T) -> Self {
+    fn sadd_clone(&self, val: T) -> Self {
         let mut res = self.clone();
         res.sadd(val);
         res
@@ -244,7 +264,7 @@ impl<T> ScalarOperation<T> for Matrix2D<T>
         }
     }
 
-    fn ssub_clone(&self, val:T) -> Self {
+    fn ssub_clone(&self, val: T) -> Self {
         let mut res = self.clone();
         res.ssub(val);
         res
@@ -258,7 +278,7 @@ impl<T> ScalarOperation<T> for Matrix2D<T>
         }
     }
 
-    fn smul_clone(&self, val:T) -> Self {
+    fn smul_clone(&self, val: T) -> Self {
         let mut res = self.clone();
         res.smul(val);
         res
@@ -272,7 +292,7 @@ impl<T> ScalarOperation<T> for Matrix2D<T>
         }
     }
 
-    fn sdiv_clone(&self, val:T) -> Self {
+    fn sdiv_clone(&self, val: T) -> Self {
         let mut res = self.clone();
         res.sdiv(val);
         res
@@ -281,17 +301,32 @@ impl<T> ScalarOperation<T> for Matrix2D<T>
 
 #[allow(dead_code)]
 impl<T> Matrix2D<T>
-    where T: Zero + One + Clone + Copy + Debug + PartialEq + PartialOrd
-            + Add<Output = T> + AddAssign 
-            + Sub<Output = T> + SubAssign 
-            + Mul<Output = T> + MulAssign
-            + Div<Output = T> + DivAssign
-            + std::ops::Neg<Output = T>
-            + Epsilon,
-          Vec<T>: ScalarOperation<T>
+where
+    T: Zero
+        + One
+        + Clone
+        + Copy
+        + Debug
+        + PartialEq
+        + PartialOrd
+        + Add<Output = T>
+        + AddAssign
+        + Sub<Output = T>
+        + SubAssign
+        + Mul<Output = T>
+        + MulAssign
+        + Div<Output = T>
+        + DivAssign
+        + std::ops::Neg<Output = T>
+        + Epsilon,
+    Vec<T>: ScalarOperation<T>,
 {
     pub fn new(row: usize, col: usize) -> Self {
-        Self { shape: (row, col), data: vec![vec![T::zero(); col]; row], is_square: row==col }
+        Self {
+            shape: (row, col),
+            data: vec![vec![T::zero(); col]; row],
+            is_square: row == col,
+        }
     }
 
     pub fn transpose(&self) -> Self {
@@ -319,7 +354,9 @@ impl<T> Matrix2D<T>
     }
 
     pub fn get_col(&self, index: usize) -> Result<Matrix2D<T>, MatrixError> {
-        if index >= self.shape.1 { return Err(MatrixError::OutOfBound)}
+        if index >= self.shape.1 {
+            return Err(MatrixError::OutOfBound);
+        }
         let mut m = Matrix2D::new(self.shape.0, 1);
         for i in 0..self.shape.0 {
             m.data[i][0] = self.data[i][index];
@@ -328,14 +365,15 @@ impl<T> Matrix2D<T>
     }
 
     pub fn get_row(&self, index: usize) -> Result<Matrix2D<T>, MatrixError> {
-        if index >= self.shape.0 { return Err(MatrixError::OutOfBound)}
+        if index >= self.shape.0 {
+            return Err(MatrixError::OutOfBound);
+        }
         let mut m = Matrix2D::new(1, self.shape.1);
         for i in 0..self.shape.1 {
             m.data[0][i] = self.data[index][i];
         }
         Ok(m)
     }
-
 
     // single value
     pub fn set_all(&mut self, val: T) {
@@ -346,18 +384,23 @@ impl<T> Matrix2D<T>
         }
     }
     pub fn set_diag(&mut self, val: T) -> Result<(), MatrixError> {
-        if !self.is_square { return Err(MatrixError::NotSquare)}
+        if !self.is_square {
+            return Err(MatrixError::NotSquare);
+        }
         for i in 0..self.shape.0 {
             self.data[i][i] = val;
         }
         Ok(())
     }
 
-
     // array operation
     pub fn add_row(&mut self, index: usize, arr: &Vec<T>) -> Result<(), MatrixError> {
-        if index >= self.shape.0 { return Err(MatrixError::OutOfBound)}
-        if arr.len() != self.shape.1 { return Err(MatrixError::ShapeMismatch)}
+        if index >= self.shape.0 {
+            return Err(MatrixError::OutOfBound);
+        }
+        if arr.len() != self.shape.1 {
+            return Err(MatrixError::ShapeMismatch);
+        }
         for i in 0..self.shape.1 {
             self.data[index][i] += arr[i];
         }
@@ -371,8 +414,12 @@ impl<T> Matrix2D<T>
     }
 
     pub fn add_col(&mut self, index: usize, arr: &Vec<T>) -> Result<(), MatrixError> {
-        if index >= self.shape.1 { return Err(MatrixError::OutOfBound)}
-        if arr.len() != self.shape.0 { return Err(MatrixError::ShapeMismatch)}
+        if index >= self.shape.1 {
+            return Err(MatrixError::OutOfBound);
+        }
+        if arr.len() != self.shape.0 {
+            return Err(MatrixError::ShapeMismatch);
+        }
         for i in 0..self.shape.0 {
             self.data[i][index] += arr[i];
         }
@@ -386,8 +433,12 @@ impl<T> Matrix2D<T>
     }
 
     pub fn sub_row(&mut self, index: usize, arr: &Vec<T>) -> Result<(), MatrixError> {
-        if index >= self.shape.0 { return Err(MatrixError::OutOfBound)}
-        if arr.len() != self.shape.1 { return Err(MatrixError::ShapeMismatch)}
+        if index >= self.shape.0 {
+            return Err(MatrixError::OutOfBound);
+        }
+        if arr.len() != self.shape.1 {
+            return Err(MatrixError::ShapeMismatch);
+        }
         for i in 0..self.shape.1 {
             self.data[index][i] -= arr[i];
         }
@@ -401,8 +452,12 @@ impl<T> Matrix2D<T>
     }
 
     pub fn sub_col(&mut self, index: usize, arr: &Vec<T>) -> Result<(), MatrixError> {
-        if index >= self.shape.1 { return Err(MatrixError::OutOfBound)}
-        if arr.len() != self.shape.0 { return Err(MatrixError::ShapeMismatch)}
+        if index >= self.shape.1 {
+            return Err(MatrixError::OutOfBound);
+        }
+        if arr.len() != self.shape.0 {
+            return Err(MatrixError::ShapeMismatch);
+        }
         for i in 0..self.shape.0 {
             self.data[i][index] -= arr[i];
         }
@@ -417,7 +472,9 @@ impl<T> Matrix2D<T>
 
     // scalar operation
     pub fn sadd_row(&mut self, index: usize, val: T) -> Result<(), MatrixError> {
-        if index >= self.shape.0 { return Err(MatrixError::OutOfBound)}
+        if index >= self.shape.0 {
+            return Err(MatrixError::OutOfBound);
+        }
         for i in 0..self.shape.1 {
             self.data[index][i] += val;
         }
@@ -431,7 +488,9 @@ impl<T> Matrix2D<T>
     }
 
     pub fn sadd_col(&mut self, index: usize, val: T) -> Result<(), MatrixError> {
-        if index >= self.shape.1 { return Err(MatrixError::OutOfBound)}
+        if index >= self.shape.1 {
+            return Err(MatrixError::OutOfBound);
+        }
         for i in 0..self.shape.0 {
             self.data[i][index] += val;
         }
@@ -445,7 +504,9 @@ impl<T> Matrix2D<T>
     }
 
     pub fn ssub_row(&mut self, index: usize, val: T) -> Result<(), MatrixError> {
-        if index >= self.shape.0 { return Err(MatrixError::OutOfBound)}
+        if index >= self.shape.0 {
+            return Err(MatrixError::OutOfBound);
+        }
         for i in 0..self.shape.1 {
             self.data[index][i] -= val;
         }
@@ -459,7 +520,9 @@ impl<T> Matrix2D<T>
     }
 
     pub fn ssub_col(&mut self, index: usize, val: T) -> Result<(), MatrixError> {
-        if index >= self.shape.1 { return Err(MatrixError::OutOfBound)}
+        if index >= self.shape.1 {
+            return Err(MatrixError::OutOfBound);
+        }
         for i in 0..self.shape.0 {
             self.data[i][index] -= val;
         }
@@ -473,7 +536,9 @@ impl<T> Matrix2D<T>
     }
 
     pub fn smul_row(&mut self, index: usize, val: T) -> Result<(), MatrixError> {
-        if index >= self.shape.0 { return Err(MatrixError::OutOfBound)}
+        if index >= self.shape.0 {
+            return Err(MatrixError::OutOfBound);
+        }
         for i in 0..self.shape.1 {
             self.data[index][i] *= val;
         }
@@ -487,7 +552,9 @@ impl<T> Matrix2D<T>
     }
 
     pub fn smul_col(&mut self, index: usize, val: T) -> Result<(), MatrixError> {
-        if index >= self.shape.1 { return Err(MatrixError::OutOfBound)}
+        if index >= self.shape.1 {
+            return Err(MatrixError::OutOfBound);
+        }
         for i in 0..self.shape.0 {
             self.data[i][index] *= val;
         }
@@ -501,7 +568,9 @@ impl<T> Matrix2D<T>
     }
 
     pub fn sdiv_row(&mut self, index: usize, val: T) -> Result<(), MatrixError> {
-        if index >= self.shape.0 { return Err(MatrixError::OutOfBound)}
+        if index >= self.shape.0 {
+            return Err(MatrixError::OutOfBound);
+        }
         for i in 0..self.shape.1 {
             self.data[index][i] /= val;
         }
@@ -515,7 +584,9 @@ impl<T> Matrix2D<T>
     }
 
     pub fn sdiv_col(&mut self, index: usize, val: T) -> Result<(), MatrixError> {
-        if index >= self.shape.1 { return Err(MatrixError::OutOfBound)}
+        if index >= self.shape.1 {
+            return Err(MatrixError::OutOfBound);
+        }
         for i in 0..self.shape.0 {
             self.data[i][index] /= val;
         }
@@ -529,33 +600,39 @@ impl<T> Matrix2D<T>
     }
 
     pub fn remove(&self, index: usize) -> Result<Matrix2D<T>, MatrixError> {
-        if index >= self.shape.0 { return Err(MatrixError::OutOfBound)}
+        if index >= self.shape.0 {
+            return Err(MatrixError::OutOfBound);
+        }
         let mut m = Self::new(self.shape.0 - 1, self.shape.1);
         let mut k = 0;
         for i in 0..self.shape.0 {
             for j in 0..self.shape.1 {
                 m.data[k][j] = self.data[i][j];
-                k+=1;
-            } 
+                k += 1;
+            }
         }
         Ok(m)
     }
 
     pub fn remove_col_clone(&self, index: usize) -> Result<Matrix2D<T>, MatrixError> {
-        if index >= self.shape.1 { return Err(MatrixError::OutOfBound)}
+        if index >= self.shape.1 {
+            return Err(MatrixError::OutOfBound);
+        }
         let mut m = Self::new(self.shape.0, self.shape.1 - 1);
         let mut k = 0;
         for i in 0..self.shape.0 {
             for j in 0..self.shape.1 {
                 m.data[i][k] = self.data[i][j];
-                k+=1;
-            } 
+                k += 1;
+            }
         }
         Ok(m)
     }
 
     pub fn swap_row(&mut self, index1: usize, index2: usize) -> Result<(), MatrixError> {
-        if index1 >= self.shape.0 || index2 >= self.shape.0 { return Err(MatrixError::OutOfBound)}
+        if index1 >= self.shape.0 || index2 >= self.shape.0 {
+            return Err(MatrixError::OutOfBound);
+        }
         let tmp = self.data[index2].clone();
         self.data[index2] = self.data[index1].clone();
         self.data[index1] = tmp;
@@ -563,16 +640,20 @@ impl<T> Matrix2D<T>
     }
 
     pub fn swap_row_clone(&self, index1: usize, index2: usize) -> Result<Matrix2D<T>, MatrixError> {
-        if index1 >= self.shape.0 || index2 >= self.shape.0 { return Err(MatrixError::OutOfBound)}
+        if index1 >= self.shape.0 || index2 >= self.shape.0 {
+            return Err(MatrixError::OutOfBound);
+        }
         let mut m = self.clone();
         match m.swap_row(index1, index2) {
             Ok(()) => Ok(m),
-            Err(e) => Err(e)
+            Err(e) => Err(e),
         }
     }
 
     pub fn swap_col(&mut self, index1: usize, index2: usize) -> Result<(), MatrixError> {
-        if index1 >= self.shape.1 || index2 >= self.shape.1 { return Err(MatrixError::OutOfBound)}
+        if index1 >= self.shape.1 || index2 >= self.shape.1 {
+            return Err(MatrixError::OutOfBound);
+        }
         let mut tmp;
         for i in 0..self.shape.0 {
             tmp = self.data[i][index2];
@@ -583,46 +664,52 @@ impl<T> Matrix2D<T>
     }
 
     pub fn swap_col_clone(&self, index1: usize, index2: usize) -> Result<Matrix2D<T>, MatrixError> {
-        if index1 >= self.shape.0 || index2 >= self.shape.0 { return Err(MatrixError::OutOfBound)}
+        if index1 >= self.shape.0 || index2 >= self.shape.0 {
+            return Err(MatrixError::OutOfBound);
+        }
         let mut m = self.clone();
         match m.swap_col(index1, index2) {
             Ok(()) => Ok(m),
-            Err(e) => Err(e)
+            Err(e) => Err(e),
         }
     }
 
     pub fn vstack(&self, other: &Matrix2D<T>) -> Result<Matrix2D<T>, MatrixError> {
-        if self.shape.1!=other.shape.1 {return Err(MatrixError::ShapeMismatch);}
+        if self.shape.1 != other.shape.1 {
+            return Err(MatrixError::ShapeMismatch);
+        }
         let mut m = Matrix2D::new(self.shape.0 + other.shape.0, self.shape.1);
         let mut k = 0;
         for i in 0..self.shape.0 {
             for j in 0..self.shape.1 {
                 m.data[k][j] = self.data[i][j];
             }
-            k+=1;
+            k += 1;
         }
         for i in 0..other.shape.0 {
             for j in 0..other.shape.1 {
                 m.data[k][j] = other.data[i][j];
             }
-            k+=1;
+            k += 1;
         }
         Ok(m)
     }
 
     pub fn hstack(&self, other: &Matrix2D<T>) -> Result<Matrix2D<T>, MatrixError> {
-        if self.shape.0!=other.shape.0 {return Err(MatrixError::ShapeMismatch);}
+        if self.shape.0 != other.shape.0 {
+            return Err(MatrixError::ShapeMismatch);
+        }
         let mut m = Matrix2D::new(self.shape.0, self.shape.1 + other.shape.1);
         let mut k;
         for i in 0..self.shape.0 {
             k = 0;
             for j in 0..self.shape.1 {
                 m.data[i][k] = self.data[i][j];
-                k+=1;
+                k += 1;
             }
             for j in 0..other.shape.1 {
                 m.data[i][k] = other.data[i][j];
-                k+=1;
+                k += 1;
             }
         }
         Ok(m)
@@ -707,11 +794,11 @@ impl<T> Matrix2D<T>
         Ok(m)
     }
 
-
     fn privotidx(&self, row: usize, col: usize) -> Option<usize> {
         let min_coff = T::epsilon();
         for i in row..self.shape.0 {
-            if self.data[i][col] - min_coff > T::zero() || self.data[i][col] + min_coff < T::zero() {
+            if self.data[i][col] - min_coff > T::zero() || self.data[i][col] + min_coff < T::zero()
+            {
                 return Some(i);
             }
         }
@@ -738,7 +825,7 @@ impl<T> Matrix2D<T>
                 maxidx = i;
             }
         }
-        
+
         if maxval < min_coff {
             None
         } else {
@@ -753,25 +840,25 @@ impl<T> Matrix2D<T>
         let mut pivot;
 
         // println!("{:?}", m.data);
-        
+
         while j < m.shape.1 && i < m.shape.0 {
             pivot = match m.privotidx(i, j) {
                 None => {
-                    j+=1;
+                    j += 1;
                     continue;
-                },
-                Some(val) => val
+                }
+                Some(val) => val,
             };
 
-            if pivot!=i {
+            if pivot != i {
                 m.swap_row(i, pivot).unwrap();
             }
-            
+
             // println!("swap: {:?}", m.data);
             m.smul_row(i, T::one() / m.data[i][j]).unwrap();
-            
+
             // println!("smul: {:?}", m.data);
-            for k in i+1..m.shape.0 {
+            for k in i + 1..m.shape.0 {
                 // println!("{:?}", k);
                 if m.data[k][j] - min_coff > T::zero() || m.data[k][j] + min_coff < T::zero() {
                     let mut arr = m.data[i].clone();
@@ -780,13 +867,12 @@ impl<T> Matrix2D<T>
                     m.add_row(k, &arr)?;
                 }
             }
-            i+=1;
-            j+=1;
+            i += 1;
+            j += 1;
             // println!("{:?}", m.data);
         }
         Ok(m)
-    }  
-
+    }
 
     pub fn reduced_row_echelon(&self) -> Result<Matrix2D<T>, MatrixError> {
         let min_coff = T::epsilon();
@@ -795,26 +881,28 @@ impl<T> Matrix2D<T>
         let mut pivot;
 
         // println!("{:?}", m.data);
-        
+
         while j < m.shape.1 && i < m.shape.0 {
             pivot = match m.privotmaxidx(i, j) {
                 None => {
-                    j+=1;
+                    j += 1;
                     continue;
-                },
-                Some(val) => val
+                }
+                Some(val) => val,
             };
 
-            if pivot!=i {
+            if pivot != i {
                 m.swap_row(i, pivot).unwrap();
             }
-            
+
             // println!("swap: {:?}", m.data);
             m.smul_row(i, T::one() / m.data[i][j]).unwrap();
-            
+
             // println!("smul: {:?}", m.data);
             for k in 0..m.shape.0 {
-                if i==k {continue;}
+                if i == k {
+                    continue;
+                }
                 // println!("{:?}", k);
                 if m.data[k][j] - min_coff > T::zero() || m.data[k][j] + min_coff < T::zero() {
                     let mut arr = m.data[i].clone();
@@ -823,16 +911,15 @@ impl<T> Matrix2D<T>
                     m.add_row(k, &arr)?;
                 }
             }
-            i+=1;
-            j+=1;
+            i += 1;
+            j += 1;
             // println!("{:?}", m.data);
         }
         Ok(m)
     }
-    
 
     // return (L, U, P, num_permutation)
-    /* 
+    /*
      * step:
      *  1. check square matrix
      *  2. init PA = LU
@@ -842,7 +929,7 @@ impl<T> Matrix2D<T>
      *   - U = self matrix
      *   - num_permutation = 0
      *  3. solve
-     */ 
+     */
     pub fn lu_decomposition(&self) -> Result<MatrixLUP<T>, MatrixError> {
         if !self.is_square {
             return Err(MatrixError::NotSquare);
@@ -860,12 +947,13 @@ impl<T> Matrix2D<T>
 
         for j in 0..size {
             pivot = u.privotmaxidx(j, j).unwrap();
-            if !(u.data[pivot][j] - min_coff > T::zero() || u.data[pivot][j] + min_coff < T::zero()) {
+            if !(u.data[pivot][j] - min_coff > T::zero() || u.data[pivot][j] + min_coff < T::zero())
+            {
                 return Err(MatrixError::OutOfBound);
             }
-            
+
             // println!("pivot: {:?}", pivot);
-            if pivot!=j {
+            if pivot != j {
                 u.swap_row(j, pivot)?;
                 l.swap_row(j, pivot)?;
                 p.swap_row(j, pivot)?;
@@ -874,7 +962,7 @@ impl<T> Matrix2D<T>
 
             // println!("U: {:?}", U);
 
-            for i in j+1..size {
+            for i in j + 1..size {
                 mult = u.data[i][j] / u.data[j][j];
                 let arr = u.data[j].smul_clone(-mult);
                 u.add_row(i, &arr)?;
@@ -886,29 +974,35 @@ impl<T> Matrix2D<T>
         }
 
         let lup = MatrixLUP {
-            l, 
-            u, 
-            p, 
-            num_permutations: permutation
+            l,
+            u,
+            p,
+            num_permutations: permutation,
         };
 
         Ok(lup)
     }
 
-    fn get_cofactor(&self, buf: &mut Self, p: usize, q: usize, n: usize) -> Result<(), MatrixError> {
+    fn get_cofactor(
+        &self,
+        buf: &mut Self,
+        p: usize,
+        q: usize,
+        n: usize,
+    ) -> Result<(), MatrixError> {
         if !self.is_square {
             return Err(MatrixError::NotSquare);
         }
         let (mut i, mut j) = (0, 0);
         for row in 0..n {
             for col in 0..n {
-                if row!=p && col!=q {
+                if row != p && col != q {
                     buf.data[i][j] = self.data[row][col];
-                    j+=1;
-                    
-                    if j==n-1 {
+                    j += 1;
+
+                    if j == n - 1 {
                         j = 0;
-                        i+=1;
+                        i += 1;
                     }
                 }
             }
@@ -921,7 +1015,9 @@ impl<T> Matrix2D<T>
             return Err(MatrixError::NotSquare);
         }
         let length = self.shape.0;
-        if n == 1 {return Ok(self.data[0][0]);}
+        if n == 1 {
+            return Ok(self.data[0][0]);
+        }
         let mut res = T::zero();
         let mut sign = T::one();
         let mut buf = Matrix2D::new(length, length);
@@ -938,7 +1034,9 @@ impl<T> Matrix2D<T>
             return Err(MatrixError::NotSquare);
         }
         let length = self.shape.0;
-        if length==1 {return Ok((*self).clone());}
+        if length == 1 {
+            return Ok((*self).clone());
+        }
 
         let mut res = Matrix2D::new(length, length);
         let mut sign;
@@ -946,7 +1044,11 @@ impl<T> Matrix2D<T>
         for i in 0..length {
             for j in 0..length {
                 self.get_cofactor(&mut buf, i, j, length)?;
-                sign = if (i + j) % 2 == 0 {T::one()} else {-T::one()};
+                sign = if (i + j) % 2 == 0 {
+                    T::one()
+                } else {
+                    -T::one()
+                };
                 res.data[j][i] = sign * buf.determinant(length - 1).unwrap();
             }
         }
@@ -960,7 +1062,9 @@ impl<T> Matrix2D<T>
         }
         let length = self.shape.0;
         let det = self.determinant(length).unwrap();
-        if det == T::zero() {return Err(MatrixError::SingularMatrix);}
+        if det == T::zero() {
+            return Err(MatrixError::SingularMatrix);
+        }
 
         let adj = self.ajoint().unwrap();
         let mut res = Matrix2D::new(length, length);
@@ -976,36 +1080,45 @@ impl<T> Matrix2D<T>
     // unit test
 }
 
-impl<T> From<Vec<T>> for Matrix2D<T> 
-    where T: Number
+impl<T> From<Vec<T>> for Matrix2D<T>
+where
+    T: Number,
 {
     fn from(value: Vec<T>) -> Self {
-        let is_square = value.len()==1;
-        Matrix2D { shape: (1, value.len()), data: vec![value], is_square}
+        let is_square = value.len() == 1;
+        Matrix2D {
+            shape: (1, value.len()),
+            data: vec![value],
+            is_square,
+        }
     }
 }
 
-impl<T> From<Vec<Vec<T>>> for Matrix2D<T> 
-    where T: Number
+impl<T> From<Vec<Vec<T>>> for Matrix2D<T>
+where
+    T: Number,
 {
     fn from(value: Vec<Vec<T>>) -> Self {
-        let is_square = value.len()==value[0].len();
-        Matrix2D { shape: (value.len(), value[0].len()), data: value, is_square}
+        let is_square = value.len() == value[0].len();
+        Matrix2D {
+            shape: (value.len(), value[0].len()),
+            data: value,
+            is_square,
+        }
     }
 }
-
 
 #[cfg(test)]
 mod tests {
-    use crate::Matrix2D;
     use crate::Epsilon;
+    use crate::Matrix2D;
 
     #[test]
     fn case_square_zero() {
         let m = Matrix2D::<isize>::new(3, 3);
 
         assert_eq!(vec![vec![0; 3]; 3], m.data);
-        assert_eq!((3,3), m.shape);
+        assert_eq!((3, 3), m.shape);
         assert!(m.is_square);
     }
 
@@ -1016,11 +1129,7 @@ mod tests {
         assert_eq!(vec![vec![1.0; 3]; 3], m.data);
 
         // m.mul_row(1, 5.0).unwrap();
-        assert_eq!(vec![
-            vec![1.0; 3],
-            vec![5.0; 3],
-            vec![1.0; 3],
-        ], m.data);
+        assert_eq!(vec![vec![1.0; 3], vec![5.0; 3], vec![1.0; 3],], m.data);
     }
 
     #[test]
@@ -1030,11 +1139,7 @@ mod tests {
         assert_eq!(vec![vec![1.0; 3]; 3], m.data);
 
         m.add_row(1, &vec![5.0; 3]).unwrap();
-        assert_eq!(vec![
-            vec![1.0; 3],
-            vec![6.0; 3],
-            vec![1.0; 3],
-        ], m.data);
+        assert_eq!(vec![vec![1.0; 3], vec![6.0; 3], vec![1.0; 3],], m.data);
     }
 
     #[test]
@@ -1044,15 +1149,11 @@ mod tests {
         assert_eq!(vec![vec![11; 3]; 3], m.data);
 
         // m.div_row(1, 5).unwrap();
-        assert_eq!(vec![
-            vec![11; 3],
-            vec![2; 3],
-            vec![11; 3],
-        ], m.data);
+        assert_eq!(vec![vec![11; 3], vec![2; 3], vec![11; 3],], m.data);
     }
 
     #[test]
-    fn case_epsilon(){
+    fn case_epsilon() {
         println!("{:?}", f64::EPSILON);
         println!("{:?}", f64::epsilon());
         println!("{:?}", f32::epsilon());
